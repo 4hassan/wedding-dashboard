@@ -1,0 +1,2273 @@
+<!DOCTYPE html><html lang="en"><head><meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://code.jquery.com https://unpkg.com https://d3js.org https://threejs.org https://cdn.plot.ly https://stackpath.bootstrapcdn.com https://maps.googleapis.com https://cdn.tailwindcss.com https://ajax.googleapis.com https://kit.fontawesome.com https://cdn.datatables.net https://maxcdn.bootstrapcdn.com https://code.highcharts.com https://tako-static-assets-production.s3.amazonaws.com https://www.youtube.com https://fonts.googleapis.com https://fonts.gstatic.com https://pfst.cf2.poecdn.net https://puc.poecdn.net https://i.imgur.com https://wikimedia.org https://*.icons8.com https://*.giphy.com https://picsum.photos https://images.unsplash.com; frame-src 'self' https://www.youtube.com https://trytako.com; child-src 'self'; manifest-src 'self'; worker-src 'self'; upgrade-insecure-requests; block-all-mixed-content;">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wedding &amp; Goals Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+    <style>
+        /* CSS remains the same */
+        :root {
+            --primary: #6c5ce7;
+            --primary-light: #a29bfe;
+            --secondary: #fd79a8;
+            --secondary-light: #fab1cc;
+            --dark: #2d3436;
+            --gray: #636e72;
+            --light-gray: #dfe6e9;
+            --white: #ffffff;
+            --success: #00b894;
+            --warning: #fdcb6e;
+            --danger: #ff7675;
+            --card-shadow: 0 10px 20px rgba(0,0,0,0.05), 0 6px 6px rgba(0,0,0,0.07);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        body {
+            background-color: #f7f9fc;
+            color: var(--dark);
+            line-height: 1.6;
+            padding: 0;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+            border-radius: 0 0 30px 30px;
+            margin-bottom: 30px;
+            box-shadow: var(--card-shadow);
+            position: relative;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .nav-container {
+            background-color: var(--white);
+            border-radius: 50px;
+            padding: 5px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 30px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .main-nav {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 15px 10px;
+            cursor: pointer;
+            z-index: 2;
+            transition: var(--transition);
+            width: 25%;
+            position: relative;
+            color: var(--gray);
+        }
+        
+        .nav-item.active {
+            color: var(--white);
+        }
+        
+        .nav-icon {
+            margin-bottom: 5px;
+        }
+        
+        .nav-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .nav-indicator {
+            position: absolute;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            width: 25%;
+            height: calc(100% - 10px);
+            border-radius: 50px;
+            z-index: 1;
+            top: 5px;
+            left: 0;
+            transition: var(--transition);
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+        
+        @media (min-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        .card {
+            background: var(--white);
+            border-radius: 20px;
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+            transition: var(--transition);
+            position: relative;
+            margin-bottom: 30px;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1), 0 10px 10px rgba(0,0,0,0.08);
+        }
+        
+        .card-header {
+            padding: 20px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: none;
+        }
+        
+        .card-header h2 {
+            color: var(--dark);
+            font-weight: 600;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .card-header h2 svg {
+            margin-right: 10px;
+        }
+        
+        .card-content {
+            padding: 5px 25px 25px;
+        }
+        
+        .stats-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background-color: var(--light-gray);
+            padding: 5px 15px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            color: var(--dark);
+            font-weight: 500;
+        }
+        
+        h1, h2, h3 {
+            color: var(--dark);
+        }
+        
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 6px rgba(108, 92, 231, 0.2);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 14px rgba(108, 92, 231, 0.3);
+        }
+        
+        .btn-full {
+            width: 100%;
+            margin-top: 15px;
+        }
+        
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 0.8rem;
+        }
+        
+        .btn-success {
+            background-color: var(--success);
+            box-shadow: 0 4px 6px rgba(0, 184, 148, 0.2);
+        }
+        
+        .btn-success:hover {
+            box-shadow: 0 7px 14px rgba(0, 184, 148, 0.3);
+        }
+        
+        .btn-warning {
+            background-color: var(--warning);
+            color: var(--dark);
+            box-shadow: 0 4px 6px rgba(253, 203, 110, 0.2);
+        }
+        
+        .btn-warning:hover {
+            box-shadow: 0 7px 14px rgba(253, 203, 110, 0.3);
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+            box-shadow: 0 4px 6px rgba(255, 118, 117, 0.2);
+        }
+        
+        .btn-danger:hover {
+            box-shadow: 0 7px 14px rgba(255, 118, 117, 0.3);
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary);
+            box-shadow: 0 4px 6px rgba(253, 121, 168, 0.2);
+        }
+        
+        .btn-secondary:hover {
+            box-shadow: 0 7px 14px rgba(253, 121, 168, 0.3);
+        }
+        
+        input, select, textarea {
+            padding: 12px 15px;
+            border: 2px solid var(--light-gray);
+            border-radius: 10px;
+            width: 100%;
+            margin-bottom: 15px;
+            font-size: 0.95rem;
+            transition: var(--transition);
+            background-color: #f9f9f9;
+            color: var(--dark);
+        }
+        
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 4px rgba(108, 92, 231, 0.1);
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark);
+            font-size: 0.9rem;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        ul {
+            list-style-type: none;
+            margin-top: 15px;
+        }
+        
+        .task-item, .goal-item {
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            background-color: #f9f9f9;
+            border-left: 4px solid var(--primary);
+            transition: var(--transition);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .task-item:hover, .goal-item:hover {
+            background-color: #f0f0f0;
+            transform: translateX(5px);
+        }
+        
+        .task-item.completed, .goal-item.completed {
+            border-left-color: var(--success);
+            opacity: 0.7;
+        }
+        
+        .task-item.completed .task-title, .goal-item.completed .goal-title {
+            text-decoration: line-through;
+            color: var(--gray);
+        }
+        
+        .task-content, .goal-content {
+            flex: 1;
+        }
+        
+        .task-title, .goal-title {
+            font-weight: 500;
+            font-size: 1rem;
+            margin-bottom: 5px;
+            word-break: break-word;
+        }
+        
+        .task-description, .goal-description {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+        
+        .task-meta, .goal-meta {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 5px;
+        }
+        
+        .task-actions, .goal-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        
+        .badge {
+            padding: 4px 10px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .badge-you {
+            background-color: #c7ecee;
+            color: #22a6b3;
+        }
+        
+        .badge-spouse {
+            background-color: #ffeaa7;
+            color: #fdcb6e;
+        }
+        
+        .badge-both {
+            background-color: #dff9fb;
+            color: #00cec9;
+        }
+        
+        .badge-date {
+            background-color: #e0e0e0;
+            color: var(--gray);
+        }
+        
+        .progress-container {
+            margin: 20px 0;
+            position: relative;
+        }
+        
+        .progress-bar {
+            height: 12px;
+            background-color: var(--light-gray);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            border-radius: 6px;
+            background: linear-gradient(to right, var(--primary), var(--primary-light));
+            transition: width 0.5s ease;
+            position: relative;
+        }
+        
+        .progress-label {
+            position: absolute;
+            right: 0;
+            top: -20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .filters {
+            margin-bottom: 20px;
+        }
+        
+        .date-picker {
+            appearance: none;
+            padding-right: 30px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23636e72' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2' ry='2'%3E%3C/rect%3E%3Cline x1='16' y1='2' x2='16' y2='6'%3E%3C/line%3E%3Cline x1='8' y1='2' x2='8' y2='6'%3E%3C/line%3E%3Cline x1='3' y1='10' x2='21' y2='10'%3E%3C/line%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+        }
+        
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+        
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal-content {
+            background-color: white;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: translateY(50px);
+            transition: var(--transition);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+        }
+        
+        .modal.active .modal-content {
+            transform: translateY(0);
+        }
+        
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            padding: 20px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .modal-header h3 {
+            margin: 0;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            opacity: 0.8;
+            transition: var(--transition);
+        }
+        
+        .modal-close:hover {
+            opacity: 1;
+            transform: rotate(90deg);
+        }
+        
+        .modal-body {
+            padding: 25px;
+        }
+        
+        .modal-footer {
+            padding: 15px 25px 25px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            position: sticky;
+            bottom: 0;
+            background: white;
+            border-top: 1px solid #f0f0f0;
+        }
+        
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background-color: #f0f;
+            opacity: 0;
+            z-index: 1000;
+            pointer-events: none;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes fall {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .pulse {
+            animation: pulse 1s infinite;
+        }
+        
+        .shake {
+            animation: shake 0.5s;
+        }
+        
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            50% { transform: translateX(10px); }
+            75% { transform: translateX(-10px); }
+            100% { transform: translateX(0); }
+        }
+        
+        .priority-high {
+            border-left-color: var(--danger);
+        }
+        
+        .priority-medium {
+            border-left-color: var(--warning);
+        }
+        
+        .priority-low {
+            border-left-color: var(--success);
+        }
+        
+        .badge-priority-high {
+            background-color: #ffecee;
+            color: var(--danger);
+        }
+        
+        .badge-priority-medium {
+            background-color: #fff6e6;
+            color: var(--warning);
+        }
+        
+        .badge-priority-low {
+            background-color: #e4f9f5;
+            color: var(--success);
+        }
+        
+        .task-divider {
+            margin: 20px 0;
+            font-weight: 600;
+            color: var(--gray);
+            border-bottom: 1px solid var(--light-gray);
+            padding-bottom: 10px;
+        }
+        
+        .dragging {
+            opacity: 0.5;
+        }
+
+        .item-enter-animation {
+            animation: fadeIn 0.5s;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        @media (min-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr 1fr 1fr;
+            }
+        }
+        
+        .stat-card {
+            background-color: #f9f9f9;
+            border-radius: 15px;
+            padding: 25px 20px;
+            text-align: center;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: var(--primary);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .stat-label {
+            font-size: 1rem;
+            color: var(--gray);
+            font-weight: 600;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .stat-desc {
+            font-size: 0.85rem;
+            color: var(--gray);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .stat-bg-icon {
+            position: absolute;
+            right: -15px;
+            bottom: -15px;
+            font-size: 120px;
+            opacity: 0.05;
+            color: var(--primary);
+            transform: rotate(-15deg);
+        }
+        
+        .stat-card.yours {
+            border-top: 3px solid #22a6b3;
+        }
+        
+        .stat-card.spouse {
+            border-top: 3px solid #fdcb6e;
+        }
+        
+        .stat-card.both {
+            border-top: 3px solid #00cec9;
+        }
+        
+        .yours .stat-number {
+            color: #22a6b3;
+        }
+        
+        .spouse .stat-number {
+            color: #fdcb6e;
+        }
+        
+        .both .stat-number {
+            color: #00cec9;
+        }
+        
+        .empty-message {
+            padding: 15px;
+            color: var(--gray);
+            font-style: italic;
+            text-align: center;
+        }
+        
+        .page {
+            display: none;
+        }
+        
+        .page.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .page-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin: 0;
+        }
+        
+        .donut-chart-container {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 15px;
+        }
+        
+        .donut-chart {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+        
+        .donut-chart-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        .countdown-container {
+            text-align: center;
+            margin: 25px 0;
+            padding: 25px;
+            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+            border-radius: 15px;
+            color: white;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .countdown-title {
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        
+        .countdown-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .countdown-label {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+        
+        .quick-action {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background-color: var(--white);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .quick-action:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .quick-action-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        
+        .quick-action-tasks {
+            background-color: rgba(108, 92, 231, 0.1);
+            color: var(--primary);
+        }
+        
+        .quick-action-goals {
+            background-color: rgba(253, 121, 168, 0.1);
+            color: var(--secondary);
+        }
+        
+        .quick-action-content {
+            flex: 1;
+        }
+        
+        .quick-action-title {
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+        
+        .quick-action-subtitle {
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+        
+        .floating-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            cursor: pointer;
+            transition: var(--transition);
+            z-index: 10;
+        }
+        
+        .floating-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+        }
+        
+        .floating-btn svg {
+            width: 24px;
+            height: 24px;
+        }
+        
+        .upcoming-section {
+            margin-top: 30px;
+        }
+        
+        .upcoming-section h3 {
+            margin-bottom: 15px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 30px 20px;
+            color: var(--gray);
+        }
+        
+        .empty-state svg {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 15px;
+            opacity: 0.4;
+        }
+        
+        .empty-state p {
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+        
+        .progress-summary {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        @media (min-width: 768px) {
+            .progress-summary {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        .progress-card {
+            background-color: var(--white);
+            border-radius: 15px;
+            box-shadow: var(--card-shadow);
+            padding: 20px;
+            position: relative;
+        }
+        
+        .progress-card h3 {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .progress-card h3 svg {
+            width: 20px;
+            height: 20px;
+        }
+        
+        /* Add z-index to ensure buttons are clickable */
+        .modal-footer .btn {
+            position: relative;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Our Journey Together</h1>
+        <p>Wedding Planning &amp; Daily Goals Dashboard</p>
+    </div>
+    
+    <div class="container">
+        <div class="nav-container">
+            <div class="main-nav">
+                <div class="nav-item active" data-page="home">
+                    <div class="nav-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                        </svg>
+                    </div>
+                    <div class="nav-label">Home</div>
+                </div>
+                <div class="nav-item" data-page="wedding">
+                    <div class="nav-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path>
+                        </svg>
+                    </div>
+                    <div class="nav-label">Wedding</div>
+                </div>
+                <div class="nav-item" data-page="goals">
+                    <div class="nav-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                    </div>
+                    <div class="nav-label">Goals</div>
+                </div>
+                <div class="nav-item" data-page="add">
+                    <div class="nav-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                    </div>
+                    <div class="nav-label">Add</div>
+                </div>
+                <div class="nav-indicator"></div>
+            </div>
+        </div>
+        
+        <!-- Home Page -->
+        <div id="home-page" class="page active">
+            <div class="countdown-container">
+                <div class="countdown-title">Wedding Countdown</div>
+                <div id="countdown-value" class="countdown-value">82</div>
+                <div class="countdown-label">days remaining</div>
+            </div>
+            
+            <div class="progress-summary">
+                <div class="progress-card">
+                    <h3>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path>
+                        </svg>
+                        Wedding Planning
+                    </h3>
+                    <div class="donut-chart-container">
+                        <div id="wedding-chart" class="donut-chart"></div>
+                        <div id="wedding-chart-text" class="donut-chart-text">0%</div>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            <div id="weddingProgressHome" class="progress-fill" style="width: 0%;"></div>
+                        </div>
+                        <div id="weddingProgressLabelHome" class="progress-label">0%</div>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-card yours">
+                            <div id="yourTaskCount" class="stat-number">0</div>
+                            <div class="stat-label">Your Tasks</div>
+                        </div>
+                        <div class="stat-card spouse">
+                            <div id="spouseTaskCount" class="stat-number">0</div>
+                            <div class="stat-label">Spouse Tasks</div>
+                        </div>
+                        <div class="stat-card both">
+                            <div id="bothTaskCount" class="stat-number">0</div>
+                            <div class="stat-label">Shared Tasks</div>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary btn-full" onclick="navigateTo('wedding')">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                        Manage Wedding Tasks
+                    </button>
+                </div>
+                
+                <div class="progress-card">
+                    <h3>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                        Today's Goals
+                    </h3>
+                    <div class="donut-chart-container">
+                        <div id="goals-chart" class="donut-chart"></div>
+                        <div id="goals-chart-text" class="donut-chart-text">0%</div>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            <div id="goalsProgressHome" class="progress-fill" style="width: 0%;"></div>
+                        </div>
+                        <div id="goalsProgressLabelHome" class="progress-label">0%</div>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-card yours">
+                            <div id="yourGoalCount" class="stat-number">0</div>
+                            <div class="stat-label">Your Goals</div>
+                        </div>
+                        <div class="stat-card spouse">
+                            <div id="spouseGoalCount" class="stat-number">0</div>
+                            <div class="stat-label">Spouse Goals</div>
+                        </div>
+                        <div class="stat-card both">
+                            <div id="completedGoalCount" class="stat-number">0</div>
+                            <div class="stat-label">Completed</div>
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary btn-full" onclick="navigateTo('goals')">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                        Manage Daily Goals
+                    </button>
+                </div>
+            </div>
+            
+            <div class="upcoming-section">
+                <h3>Upcoming Tasks</h3>
+                <ul id="upcomingTasksList" class="task-list"></ul>
+            </div>
+        </div>
+        
+        <!-- Wedding Tasks Page -->
+        <div id="wedding-page" class="page">
+            <div class="page-header">
+                <h2 class="page-title">Wedding Planning</h2>
+                <div class="stats-container">
+                    <span id="weddingCompleted">0</span>/<span id="weddingTotal">0</span> Tasks
+                </div>
+            </div>
+            
+            <div class="filters">
+                <div class="form-group">
+                    <select id="weddingFilter" onchange="filterWeddingTasks()">
+                        <option value="all">All Tasks</option>
+                        <option value="pending">Pending Tasks</option>
+                        <option value="completed">Completed Tasks</option>
+                        <option value="you">Assigned to You</option>
+                        <option value="spouse">Assigned to Spouse</option>
+                        <option value="both">Assigned to Both</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div id="weddingProgress" class="progress-fill" style="width: 0%;"></div>
+                </div>
+                <div id="weddingProgressLabel" class="progress-label">0%</div>
+            </div>
+            
+            <div id="tasksContainer">
+                <!-- Your Tasks Section -->
+                <div id="yourTasks">
+                    <div class="task-divider">Your Tasks</div>
+                    <ul id="yourTasksList" class="task-list"></ul>
+                </div>
+                
+                <!-- Spouse Tasks Section -->
+                <div id="spouseTasks">
+                    <div class="task-divider">Spouse Tasks</div>
+                    <ul id="spouseTasksList" class="task-list"></ul>
+                </div>
+                
+                <!-- Shared Tasks Section -->
+                <div id="sharedTasks">
+                    <div class="task-divider">Shared Tasks</div>
+                    <ul id="sharedTasksList" class="task-list"></ul>
+                </div>
+            </div>
+            
+            <button class="floating-btn" onclick="showModal('addTaskModal')">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+            </button>
+        </div>
+        
+        <!-- Goals Page -->
+        <div id="goals-page" class="page">
+            <div class="page-header">
+                <h2 class="page-title">Daily Goals</h2>
+                <div class="stats-container">
+                    <span id="goalsCompleted">0</span>/<span id="goalsTotal">0</span> Goals
+                </div>
+            </div>
+            
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div id="goalsProgress" class="progress-fill" style="width: 0%;"></div>
+                </div>
+                <div id="goalsProgressLabel" class="progress-label">0%</div>
+            </div>
+            
+            <div id="yourGoals">
+                <div class="task-divider">Your Goals</div>
+                <ul id="yourGoalsList" class="goal-list"></ul>
+            </div>
+            
+            <div id="spouseGoals">
+                <div class="task-divider">Spouse Goals</div>
+                <ul id="spouseGoalsList" class="goal-list"></ul>
+            </div>
+            
+            <button class="floating-btn" onclick="showModal('addGoalModal')">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+            </button>
+        </div>
+        
+        <!-- Add Page -->
+        <div id="add-page" class="page">
+            <div class="page-header">
+                <h2 class="page-title">Add New</h2>
+            </div>
+            
+            <div class="quick-action" onclick="showModal('addTaskModal')">
+                <div class="quick-action-icon quick-action-tasks">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path>
+                    </svg>
+                </div>
+                <div class="quick-action-content">
+                    <div class="quick-action-title">Add Wedding Task</div>
+                    <div class="quick-action-subtitle">Create a new wedding planning task</div>
+                </div>
+            </div>
+            
+            <div class="quick-action" onclick="showModal('addGoalModal')">
+                <div class="quick-action-icon quick-action-goals">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                </div>
+                <div class="quick-action-content">
+                    <div class="quick-action-title">Add Daily Goal</div>
+                    <div class="quick-action-subtitle">Create a new goal for today</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Add Task Modal -->
+    <div id="addTaskModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add Wedding Task</h3>
+                <button type="button" class="modal-close" onclick="closeModal('addTaskModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="weddingForm">
+                    <div class="form-group">
+                        <label for="weddingTask">Task Title</label>
+                        <input type="text" id="weddingTask" placeholder="Enter task title" required="">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="weddingDescription">Description (Optional)</label>
+                        <textarea id="weddingDescription" placeholder="Add details about this task"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="weddingDueDate">Due Date</label>
+                        <input type="date" id="weddingDueDate" class="date-picker" required="">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="weddingPriority">Priority</label>
+                        <select id="weddingPriority">
+                            <option value="low">Low</option>
+                            <option value="medium" selected="">Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="weddingAssigned">Assigned To</label>
+                        <select id="weddingAssigned">
+                            <option value="you">You</option>
+                            <option value="spouse">Your Spouse</option>
+                            <option value="both">Both</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn" onclick="closeModal('addTaskModal')">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="addWeddingTask()">Add Task</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Add Goal Modal -->
+    <div id="addGoalModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add Daily Goal</h3>
+                <button type="button" class="modal-close" onclick="closeModal('addGoalModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="goalsForm">
+                    <div class="form-group">
+                        <label for="goalTitle">Goal Title</label>
+                        <input type="text" id="goalTitle" placeholder="Enter your goal" required="">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="goalDescription">Description (Optional)</label>
+                        <textarea id="goalDescription" placeholder="Add details about this goal"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="goalPerson">Person</label>
+                        <select id="goalPerson">
+                            <option value="you">You</option>
+                            <option value="spouse">Your Spouse</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="goalPriority">Priority</label>
+                        <select id="goalPriority">
+                            <option value="low">Low</option>
+                            <option value="medium" selected="">Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn" onclick="closeModal('addGoalModal')">Cancel</button>
+                <button type="button" class="btn btn-secondary" onclick="addGoal()">Add Goal</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Edit Task Modal -->
+    <div id="editTaskModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Wedding Task</h3>
+                <button type="button" class="modal-close" onclick="closeModal('editTaskModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="editTaskForm">
+                    <input type="hidden" id="editTaskId">
+                    
+                    <div class="form-group">
+                        <label for="editTaskTitle">Task Title</label>
+                        <input type="text" id="editTaskTitle" required="">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editTaskDescription">Description</label>
+                        <textarea id="editTaskDescription"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editTaskDueDate">Due Date</label>
+                        <input type="date" id="editTaskDueDate" class="date-picker" required="">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editTaskPriority">Priority</label>
+                        <select id="editTaskPriority">
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editTaskAssigned">Assigned To</label>
+                        <select id="editTaskAssigned">
+                            <option value="you">You</option>
+                            <option value="spouse">Your Spouse</option>
+                            <option value="both">Both</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn" onclick="closeModal('editTaskModal')">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="saveEditedTask()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Edit Goal Modal -->
+    <div id="editGoalModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Goal</h3>
+                <button type="button" class="modal-close" onclick="closeModal('editGoalModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="editGoalForm">
+                    <input type="hidden" id="editGoalId">
+                    
+                    <div class="form-group">
+                        <label for="editGoalTitle">Goal Title</label>
+                        <input type="text" id="editGoalTitle" required="">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editGoalDescription">Description</label>
+                        <textarea id="editGoalDescription"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editGoalPerson">Person</label>
+                        <select id="editGoalPerson">
+                            <option value="you">You</option>
+                            <option value="spouse">Your Spouse</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editGoalPriority">Priority</label>
+                        <select id="editGoalPriority">
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn" onclick="closeModal('editGoalModal')">Cancel</button>
+                <button type="button" class="btn btn-secondary" onclick="saveEditedGoal()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // In-memory storage only - won't persist after page refresh in a sandboxed environment
+        let weddingTasks = [
+            {
+                id: 1,
+                task: "Book venue",
+                description: "Research and book the perfect wedding venue",
+                dueDate: "2025-06-30",
+                priority: "high",
+                assigned: "both",
+                completed: false,
+                createdAt: "2025-04-28T10:00:00.000Z"
+            },
+            {
+                id: 2,
+                task: "Order wedding cake",
+                description: "Schedule tastings with bakeries",
+                dueDate: "2025-07-15",
+                priority: "medium",
+                assigned: "you",
+                completed: false,
+                createdAt: "2025-04-28T10:30:00.000Z"
+            },
+            {
+                id: 3,
+                task: "Choose wedding party",
+                description: "Decide on bridesmaids and groomsmen",
+                dueDate: "2025-05-30",
+                priority: "medium",
+                assigned: "spouse",
+                completed: true,
+                createdAt: "2025-04-28T11:00:00.000Z"
+            }
+        ];
+        
+        let dailyGoals = [
+            {
+                id: 1,
+                title: "Complete wedding budget spreadsheet",
+                description: "Update all cost estimates",
+                person: "you",
+                priority: "high",
+                completed: false,
+                date: new Date().toISOString().split('T')[0],
+                createdAt: "2025-04-28T09:00:00.000Z"
+            },
+            {
+                id: 2,
+                title: "Call florist for quote",
+                description: "",
+                person: "spouse",
+                priority: "medium",
+                completed: true,
+                date: new Date().toISOString().split('T')[0],
+                createdAt: "2025-04-28T09:30:00.000Z"
+            }
+        ];
+        
+        let editingTaskId = null;
+        let editingGoalId = null;
+        
+        // Initialize the dashboard
+        function init() {
+            setupNavigation();
+            initDonutCharts();
+            updateTaskCounters();
+            renderWeddingTasks();
+            renderGoals();
+            updateProgress();
+            renderUpcomingTasks();
+            
+            // Set min date for inputs to today
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('weddingDueDate').min = today;
+            
+            // Set default date to today
+            document.getElementById('weddingDueDate').value = today;
+            
+            // Set countdown value for wedding
+            document.getElementById('countdown-value').textContent = 82;
+        }
+        
+        // Navigation functions
+        function setupNavigation() {
+            const navItems = document.querySelectorAll('.nav-item');
+            const navIndicator = document.querySelector('.nav-indicator');
+            
+            navItems.forEach((item, index) => {
+                item.addEventListener('click', () => {
+                    // Update nav styles
+                    navItems.forEach(i => i.classList.remove('active'));
+                    item.classList.add('active');
+                    
+                    // Move indicator
+                    navIndicator.style.left = `${index * 25}%`;
+                    
+                    // Show page
+                    const pageId = item.dataset.page;
+                    showPage(pageId);
+                });
+            });
+        }
+        
+        function navigateTo(pageId) {
+            // Find and click the navigation item
+            const navItem = document.querySelector(`.nav-item[data-page="${pageId}"]`);
+            if (navItem) {
+                navItem.click();
+            }
+        }
+        
+        function showPage(pageId) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // Show selected page
+            const page = document.getElementById(`${pageId}-page`);
+            if (page) {
+                page.classList.add('active');
+            }
+        }
+        
+        // Initialize donut charts for the home page
+        function initDonutCharts() {
+            updateDonutChart('wedding-chart', 'wedding-chart-text', 0);
+            updateDonutChart('goals-chart', 'goals-chart-text', 0);
+        }
+        
+        // Update donut chart with percentage
+        function updateDonutChart(chartId, textId, percent) {
+            const chart = document.getElementById(chartId);
+            const text = document.getElementById(textId);
+            
+            if (!chart || !text) return;
+            
+            // Create color gradient based on percentage
+            const color = percent < 30 ? '#ff7675' : percent < 70 ? '#fdcb6e' : '#00b894';
+            
+            // Update chart
+            chart.style.background = `conic-gradient(${color} ${percent}%, #dfe6e9 0%)`;
+            
+            // Update text
+            text.textContent = `${percent}%`;
+            text.style.color = color;
+        }
+        
+        // Wedding Tasks Functions
+        function addWeddingTask() {
+            const task = document.getElementById('weddingTask').value;
+            const description = document.getElementById('weddingDescription').value;
+            const dueDate = document.getElementById('weddingDueDate').value;
+            const priority = document.getElementById('weddingPriority').value;
+            const assigned = document.getElementById('weddingAssigned').value;
+            
+            if (!task) {
+                alert('Please enter a task title');
+                return;
+            }
+            
+            const newTask = {
+                id: Date.now(),
+                task,
+                description,
+                dueDate,
+                priority,
+                assigned,
+                completed: false,
+                createdAt: new Date().toISOString()
+            };
+            
+            weddingTasks.push(newTask);
+            
+            document.getElementById('weddingForm').reset();
+            
+            // Reset the due date to today
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('weddingDueDate').value = today;
+            
+            // Close modal
+            closeModal('addTaskModal');
+            
+            // Navigate to wedding page
+            navigateTo('wedding');
+            
+            // Show success feedback
+            showConfetti();
+            
+            // Update everything
+            renderWeddingTasks();
+            updateProgress();
+            updateTaskCounters();
+            renderUpcomingTasks();
+        }
+        
+        function renderWeddingTasks() {
+            const yourList = document.getElementById('yourTasksList');
+            const spouseList = document.getElementById('spouseTasksList');
+            const sharedList = document.getElementById('sharedTasksList');
+            
+            // Clear all lists
+            if (yourList) yourList.innerHTML = '';
+            if (spouseList) spouseList.innerHTML = '';
+            if (sharedList) sharedList.innerHTML = '';
+            
+            const filter = document.getElementById('weddingFilter')?.value || 'all';
+            
+            // Filter tasks
+            let filteredTasks = [...weddingTasks];
+            
+            if (filter === 'pending') {
+                filteredTasks = filteredTasks.filter(task => !task.completed);
+            } else if (filter === 'completed') {
+                filteredTasks = filteredTasks.filter(task => task.completed);
+            } else if (['you', 'spouse', 'both'].includes(filter)) {
+                filteredTasks = filteredTasks.filter(task => task.assigned === filter);
+            }
+            
+            // Sort tasks by priority (high first) and then by due date
+            filteredTasks.sort((a, b) => {
+                const priorityOrder = { high: 0, medium: 1, low: 2 };
+                if (priorityOrder[a.priority] !== priorityOrder[b.priority]) {
+                    return priorityOrder[a.priority] - priorityOrder[b.priority];
+                }
+                return new Date(a.dueDate) - new Date(b.dueDate);
+            });
+            
+            // Split tasks by assignment
+            const yourTasks = filteredTasks.filter(task => task.assigned === 'you');
+            const spouseTasks = filteredTasks.filter(task => task.assigned === 'spouse');
+            const sharedTasks = filteredTasks.filter(task => task.assigned === 'both');
+            
+            // Only proceed with rendering if we're on the wedding page
+            if (!yourList || !spouseList || !sharedList) return;
+            
+            // Hide/show sections based on filtered content
+            document.getElementById('yourTasks').style.display = yourTasks.length > 0 || filter === 'all' || filter === 'you' ? 'block' : 'none';
+            document.getElementById('spouseTasks').style.display = spouseTasks.length > 0 || filter === 'all' || filter === 'spouse' ? 'block' : 'none';
+            document.getElementById('sharedTasks').style.display = sharedTasks.length > 0 || filter === 'all' || filter === 'both' ? 'block' : 'none';
+            
+            // Show empty state if no tasks at all
+            if (filteredTasks.length === 0) {
+                const tasksContainer = document.getElementById('tasksContainer');
+                tasksContainer.innerHTML = `
+                    <div class="empty-state">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                        </svg>
+                        <p>No wedding tasks yet. Add some tasks to get started!</p>
+                        <button class="btn btn-primary" onclick="showModal('addTaskModal')">
+                            Add Your First Task
+                        </button>
+                    </div>
+                `;
+                return;
+            } else {
+                // Restore the original structure if it was replaced with empty state
+                const tasksContainer = document.getElementById('tasksContainer');
+                if (!tasksContainer.querySelector('#yourTasks')) {
+                    tasksContainer.innerHTML = `
+                        <div id="yourTasks">
+                            <div class="task-divider">Your Tasks</div>
+                            <ul id="yourTasksList" class="task-list"></ul>
+                        </div>
+                        
+                        <div id="spouseTasks">
+                            <div class="task-divider">Spouse Tasks</div>
+                            <ul id="spouseTasksList" class="task-list"></ul>
+                        </div>
+                        
+                        <div id="sharedTasks">
+                            <div class="task-divider">Shared Tasks</div>
+                            <ul id="sharedTasksList" class="task-list"></ul>
+                        </div>
+                    `;
+                    
+                    // Get the lists again after rebuilding the DOM
+                    yourList = document.getElementById('yourTasksList');
+                    spouseList = document.getElementById('spouseTasksList');
+                    sharedList = document.getElementById('sharedTasksList');
+                }
+            }
+            
+            // Render your tasks
+            if (yourTasks.length === 0 && (filter === 'all' || filter === 'you')) {
+                yourList.innerHTML = `<li class="empty-message">No tasks assigned to you yet.</li>`;
+            } else {
+                renderTaskList(yourTasks, yourList);
+            }
+            
+            // Render spouse tasks
+            if (spouseTasks.length === 0 && (filter === 'all' || filter === 'spouse')) {
+                spouseList.innerHTML = `<li class="empty-message">No tasks assigned to your spouse yet.</li>`;
+            } else {
+                renderTaskList(spouseTasks, spouseList);
+            }
+            
+            // Render shared tasks
+            if (sharedTasks.length === 0 && (filter === 'all' || filter === 'both')) {
+                sharedList.innerHTML = `<li class="empty-message">No shared tasks yet.</li>`;
+            } else {
+                renderTaskList(sharedTasks, sharedList);
+            }
+        }
+        
+        function renderTaskList(tasks, listElement) {
+            tasks.forEach(task => {
+                const daysUntilDue = Math.ceil((new Date(task.dueDate) - new Date()) / (1000 * 60 * 60 * 24));
+                let urgencyClass = '';
+                
+                if (daysUntilDue <= 3 && !task.completed) {
+                    urgencyClass = 'pulse';
+                }
+                
+                const li = document.createElement('li');
+                li.className = `task-item priority-${task.priority} ${task.completed ? 'completed' : ''} ${urgencyClass} item-enter-animation`;
+                li.dataset.id = task.id;
+                
+                li.innerHTML = `
+                    <div class="task-content">
+                        <div class="task-title">${task.task}</div>
+                        ${task.description ? `<div class="task-description">${task.description}</div>` : ''}
+                        <div class="task-meta">
+                            <span class="badge badge-${task.assigned}">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                                ${task.assigned === 'you' ? 'You' : task.assigned === 'spouse' ? 'Spouse' : 'Both'}
+                            </span>
+                            <span class="badge badge-date">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                                </svg>
+                                ${formatDate(task.dueDate)}
+                            </span>
+                            <span class="badge badge-priority-${task.priority}">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                                </svg>
+                                ${task.priority.charAt(0).toUpperCase() + task.priority.slice(1)} Priority
+                            </span>
+                        </div>
+                    </div>
+                    <div class="task-actions">
+                        <button type="button" class="btn btn-small ${task.completed ? 'btn-warning' : 'btn-success'}" onclick="toggleWeddingComplete(${task.id})">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                ${task.completed ? 
+                                    `<polyline points="9 11 7 13 15 21"></polyline><path d="M21 11v-1"></path>` : 
+                                    `<polyline points="20 6 9 17 4 12"></polyline>`}
+                            </svg>
+                        </button>
+                        <button type="button" class="btn btn-small btn-warning" onclick="openEditTaskModal(${task.id})">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                            </svg>
+                        </button>
+                        <button type="button" class="btn btn-small btn-danger" onclick="removeTask(${task.id})">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="3 6 5 6 21 6"></polyline>
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                            </svg>
+                        </button>
+                    </div>
+                `;
+                
+                listElement.appendChild(li);
+            });
+        }
+        
+        function renderUpcomingTasks() {
+            const upcomingList = document.getElementById('upcomingTasksList');
+            if (!upcomingList) return;
+            
+            upcomingList.innerHTML = '';
+            
+            // Get pending tasks sorted by due date (coming up first)
+            const pendingTasks = weddingTasks
+                .filter(task => !task.completed)
+                .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
+                .slice(0, 3); // Just show top 3
+            
+            if (pendingTasks.length === 0) {
+                upcomingList.innerHTML = `<li class="empty-message">No upcoming tasks. Great job!</li>`;
+                return;
+            }
+            
+            pendingTasks.forEach(task => {
+                const daysUntilDue = Math.ceil((new Date(task.dueDate) - new Date()) / (1000 * 60 * 60 * 24));
+                let urgencyClass = '';
+                
+                if (daysUntilDue <= 3) {
+                    urgencyClass = 'pulse';
+                }
+                
+                const li = document.createElement('li');
+                li.className = `task-item priority-${task.priority} ${urgencyClass} item-enter-animation`;
+                li.dataset.id = task.id;
+                
+                li.innerHTML = `
+                    <div class="task-content">
+                        <div class="task-title">${task.task}</div>
+                        <div class="task-meta">
+                            <span class="badge badge-${task.assigned}">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                                ${task.assigned === 'you' ? 'You' : task.assigned === 'spouse' ? 'Spouse' : 'Both'}
+                            </span>
+                            <span class="badge badge-date">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                                </svg>
+                                ${formatDate(task.dueDate)}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="task-actions">
+                        <button type="button" class="btn btn-small btn-success" onclick="completeAndNavigate(${task.id})">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                        </button>
+                    </div>
+                `;
+                
+                upcomingList.appendChild(li);
+            });
+        }
+        
+        function completeAndNavigate(id) {
+            toggleWeddingComplete(id);
+            navigateTo('wedding');
+        }
+        
+        function updateTaskCounters() {
+            const yourTaskCount = weddingTasks.filter(task => task.assigned === 'you').length;
+            const spouseTaskCount = weddingTasks.filter(task => task.assigned === 'spouse').length;
+            const bothTaskCount = weddingTasks.filter(task => task.assigned === 'both').length;
+            
+            // Update home page counters
+            if (document.getElementById('yourTaskCount')) {
+                document.getElementById('yourTaskCount').textContent = yourTaskCount;
+                document.getElementById('spouseTaskCount').textContent = spouseTaskCount;
+                document.getElementById('bothTaskCount').textContent = bothTaskCount;
+            }
+            
+            // Update goal counters for home page
+            const today = new Date().toISOString().split('T')[0];
+            const todayGoals = dailyGoals.filter(goal => goal.date === today);
+            
+            const yourGoalCount = todayGoals.filter(goal => goal.person === 'you').length;
+            const spouseGoalCount = todayGoals.filter(goal => goal.person === 'spouse').length;
+            const completedGoalCount = todayGoals.filter(goal => goal.completed).length;
+            
+            if (document.getElementById('yourGoalCount')) {
+                document.getElementById('yourGoalCount').textContent = yourGoalCount;
+                document.getElementById('spouseGoalCount').textContent = spouseGoalCount;
+                document.getElementById('completedGoalCount').textContent = completedGoalCount;
+            }
+        }
+        
+        function filterWeddingTasks() {
+            renderWeddingTasks();
+        }
+        
+        function toggleWeddingComplete(id) {
+            const task = weddingTasks.find(task => task.id === id);
+            if (task) {
+                task.completed = !task.completed;
+                
+                if (task.completed) {
+                    showConfetti();
+                }
+                
+                renderWeddingTasks();
+                renderUpcomingTasks();
+                updateProgress();
+            }
+        }
+        
+        function openEditTaskModal(id) {
+            editingTaskId = id;
+            const task = weddingTasks.find(task => task.id === id);
+            
+            if (task) {
+                document.getElementById('editTaskId').value = task.id;
+                document.getElementById('editTaskTitle').value = task.task;
+                document.getElementById('editTaskDescription').value = task.description || '';
+                document.getElementById('editTaskDueDate').value = task.dueDate;
+                document.getElementById('editTaskPriority').value = task.priority;
+                document.getElementById('editTaskAssigned').value = task.assigned;
+                
+                showModal('editTaskModal');
+            }
+        }
+        
+        function saveEditedTask() {
+            const id = parseInt(document.getElementById('editTaskId').value);
+            const index = weddingTasks.findIndex(task => task.id === id);
+            
+            if (index !== -1) {
+                weddingTasks[index] = {
+                    ...weddingTasks[index],
+                    task: document.getElementById('editTaskTitle').value,
+                    description: document.getElementById('editTaskDescription').value,
+                    dueDate: document.getElementById('editTaskDueDate').value,
+                    priority: document.getElementById('editTaskPriority').value,
+                    assigned: document.getElementById('editTaskAssigned').value
+                };
+                
+                renderWeddingTasks();
+                renderUpcomingTasks();
+                updateProgress();
+                updateTaskCounters();
+                closeModal('editTaskModal');
+            }
+        }
+        
+        // Direct delete function without confirmation
+        function removeTask(id) {
+            weddingTasks = weddingTasks.filter(t => t.id != id);
+            
+            renderWeddingTasks();
+            renderUpcomingTasks();
+            updateProgress();
+            updateTaskCounters();
+        }
+        
+        // Daily Goals Functions
+        function addGoal() {
+            const title = document.getElementById('goalTitle').value;
+            const description = document.getElementById('goalDescription').value;
+            const person = document.getElementById('goalPerson').value;
+            const priority = document.getElementById('goalPriority').value;
+            
+            if (!title) {
+                alert('Please enter a goal title');
+                return;
+            }
+            
+            const newGoal = {
+                id: Date.now(),
+                title,
+                description,
+                person,
+                priority,
+                completed: false,
+                date: new Date().toISOString().split('T')[0],
+                createdAt: new Date().toISOString()
+            };
+            
+            dailyGoals.push(newGoal);
+            
+            document.getElementById('goalsForm').reset();
+            
+            // Close modal
+            closeModal('addGoalModal');
+            
+            // Navigate to goals page
+            navigateTo('goals');
+            
+            // Show success feedback
+            showConfetti();
+            
+            renderGoals();
+            updateProgress();
+            updateTaskCounters();
+        }
+        
+        function renderGoals() {
+            const yourList = document.getElementById('yourGoalsList');
+            const spouseList = document.getElementById('spouseGoalsList');
+            
+            if (!yourList || !spouseList) return;
+            
+            yourList.innerHTML = '';
+            spouseList.innerHTML = '';
+            
+            // Filter goals for today only
+            const today = new Date().toISOString().split('T')[0];
+            const todayGoals = dailyGoals.filter(goal => goal.date === today);
+            
+            const yourGoals = todayGoals.filter(goal => goal.person === 'you');
+            const spouseGoals = todayGoals.filter(goal => goal.person === 'spouse');
+            
+            // Sort goals by priority
+            yourGoals.sort((a, b) => {
+                const priorityOrder = { high: 0, medium: 1, low: 2 };
+                return priorityOrder[a.priority] - priorityOrder[b.priority];
+            });
+            
+            spouseGoals.sort((a, b) => {
+                const priorityOrder = { high: 0, medium: 1, low: 2 };
+                return priorityOrder[a.priority] - priorityOrder[b.priority];
+            });
+            
+            if (yourGoals.length === 0) {
+                yourList.innerHTML = `
+                    <div class="empty-state">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                        <p>No goals for today. What would you like to accomplish?</p>
+                        <button class="btn btn-secondary" onclick="showModal('addGoalModal')">
+                            Add Your First Goal
+                        </button>
+                    </div>
+                `;
+            }
+            
+            if (spouseGoals.length === 0) {
+                spouseList.innerHTML = `
+                    <div class="empty-state">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                        <p>No goals for your spouse today.</p>
+                        <button class="btn btn-secondary" onclick="showModal('addGoalModal')">
+                            Add a Goal for Your Spouse
+                        </button>
+                    </div>
+                `;
+            }
+            
+            yourGoals.forEach(goal => {
+                const li = document.createElement('li');
+                li.className = `goal-item priority-${goal.priority} ${goal.completed ? 'completed' : ''} item-enter-animation`;
+                li.dataset.id = goal.id;
+                
+                li.innerHTML = `
+                    <div class="goal-content">
+                        <div class="goal-title">${goal.title}</div>
+                        ${goal.description ? `<div class="goal-description">${goal.description}</div>` : ''}
+                        <div class="goal-meta">
+                            <span class="badge badge-priority-${goal.priority}">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                                </svg>
+                                ${goal.priority.charAt(0).toUpperCase() + goal.priority.slice(1)}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="goal-actions">
+                        <button type="button" class="btn btn-small ${goal.completed ? 'btn-warning' : 'btn-success'}" onclick="toggleGoalComplete(${goal.id})">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                ${goal.completed ? 
+                                    `<polyline points="9 11 7 13 15 21"></polyline><path d="M21 11v-1"></path>` : 
+                                    `<polyline points="20 6 9 17 4 12"></polyline>`}
+                            </svg>
+                        </button>
+                        <button type="button" class="btn btn-small btn-warning" onclick="openEditGoalModal(${goal.id})">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                            </svg>
+                        </button>
+                        <button type="button" class="btn btn-small btn-danger" onclick="removeGoal(${goal.id})">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="3 6 5 6 21 6"></polyline>
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                            </svg>
+                        </button>
+                    </div>
+                `;
+                
+                yourList.appendChild(li);
+            });
+            
+            spouseGoals.forEach(goal => {
+                const li = document.createElement('li');
+                li.className = `goal-item priority-${goal.priority} ${goal.completed ? 'completed' : ''} item-enter-animation`;
+                li.dataset.id = goal.id;
+                
+                li.innerHTML = `
+                    <div class="goal-content">
+                        <div class="goal-title">${goal.title}</div>
+                        ${goal.description ? `<div class="goal-description">${goal.description}</div>` : ''}
+                        <div class="goal-meta">
+                            <span class="badge badge-priority-${goal.priority}">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                                </svg>
+                                ${goal.priority.charAt(0).toUpperCase() + goal.priority.slice(1)}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="goal-actions">
+                        <button type="button" class="btn btn-small ${goal.completed ? 'btn-warning' : 'btn-success'}" onclick="toggleGoalComplete(${goal.id})">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                ${goal.completed ? 
+                                    `<polyline points="9 11 7 13 15 21"></polyline><path d="M21 11v-1"></path>` : 
+                                    `<polyline points="20 6 9 17 4 12"></polyline>`}
+                            </svg>
+                        </button>
+                        <button type="button" class="btn btn-small btn-warning" onclick="openEditGoalModal(${goal.id})">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                            </svg>
+                        </button>
+                        <button type="button" class="btn btn-small btn-danger" onclick="removeGoal(${goal.id})">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="3 6 5 6 21 6"></polyline>
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                            </svg>
+                        </button>
+                    </div>
+                `;
+                
+                spouseList.appendChild(li);
+            });
+        }
+        
+        function toggleGoalComplete(id) {
+            const goal = dailyGoals.find(goal => goal.id === id);
+            if (goal) {
+                goal.completed = !goal.completed;
+                
+                if (goal.completed) {
+                    showConfetti();
+                }
+                
+                renderGoals();
+                updateProgress();
+                updateTaskCounters();
+            }
+        }
+        
+        function openEditGoalModal(id) {
+            editingGoalId = id;
+            const goal = dailyGoals.find(goal => goal.id === id);
+            
+            if (goal) {
+                document.getElementById('editGoalId').value = goal.id;
+                document.getElementById('editGoalTitle').value = goal.title;
+                document.getElementById('editGoalDescription').value = goal.description || '';
+                document.getElementById('editGoalPerson').value = goal.person;
+                document.getElementById('editGoalPriority').value = goal.priority;
+                
+                showModal('editGoalModal');
+            }
+        }
+        
+        function saveEditedGoal() {
+            const id = parseInt(document.getElementById('editGoalId').value);
+            const index = dailyGoals.findIndex(goal => goal.id === id);
+            
+            if (index !== -1) {
+                dailyGoals[index] = {
+                    ...dailyGoals[index],
+                    title: document.getElementById('editGoalTitle').value,
+                    description: document.getElementById('editGoalDescription').value,
+                    person: document.getElementById('editGoalPerson').value,
+                    priority: document.getElementById('editGoalPriority').value
+                };
+                
+                renderGoals();
+                updateProgress();
+                updateTaskCounters();
+                closeModal('editGoalModal');
+            }
+        }
+        
+        // Direct delete function for goals without confirmation
+        function removeGoal(id) {
+            dailyGoals = dailyGoals.filter(g => g.id != id);
+            
+            renderGoals();
+            updateProgress();
+            updateTaskCounters();
+        }
+        
+        // Modal Functions
+        function showModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.add('active');
+            }
+        }
+        
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.remove('active');
+            }
+        }
+        
+        // Utility Functions
+        function updateProgress() {
+            const weddingTotal = weddingTasks.length;
+            const weddingCompleted = weddingTasks.filter(task => task.completed).length;
+            
+            // Filter goals for today only
+            const today = new Date().toISOString().split('T')[0];
+            const todayGoals = dailyGoals.filter(goal => goal.date === today);
+            
+            const goalsTotal = todayGoals.length;
+            const goalsCompleted = todayGoals.filter(goal => goal.completed).length;
+            
+            // Update counters on dedicated pages
+            if (document.getElementById('weddingTotal')) {
+                document.getElementById('weddingTotal').textContent = weddingTotal;
+                document.getElementById('weddingCompleted').textContent = weddingCompleted;
+            }
+            
+            if (document.getElementById('goalsTotal')) {
+                document.getElementById('goalsTotal').textContent = goalsTotal;
+                document.getElementById('goalsCompleted').textContent = goalsCompleted;
+            }
+            
+            // Calculate percentages
+            const weddingPercent = weddingTotal === 0 ? 0 : Math.round((weddingCompleted / weddingTotal) * 100);
+            const goalsPercent = goalsTotal === 0 ? 0 : Math.round((goalsCompleted / goalsTotal) * 100);
+            
+            // Update progress bars on dedicated pages
+            if (document.getElementById('weddingProgress')) {
+                document.getElementById('weddingProgress').style.width = `${weddingPercent}%`;
+                document.getElementById('weddingProgressLabel').textContent = `${weddingPercent}%`;
+            }
+            
+            if (document.getElementById('goalsProgress')) {
+                document.getElementById('goalsProgress').style.width = `${goalsPercent}%`;
+                document.getElementById('goalsProgressLabel').textContent = `${goalsPercent}%`;
+            }
+            
+            // Update home page progress indicators
+            if (document.getElementById('weddingProgressHome')) {
+                document.getElementById('weddingProgressHome').style.width = `${weddingPercent}%`;
+                document.getElementById('weddingProgressLabelHome').textContent = `${weddingPercent}%`;
+            }
+            
+            if (document.getElementById('goalsProgressHome')) {
+                document.getElementById('goalsProgressHome').style.width = `${goalsPercent}%`;
+                document.getElementById('goalsProgressLabelHome').textContent = `${goalsPercent}%`;
+            }
+            
+            // Update donut charts
+            if (document.getElementById('wedding-chart')) {
+                updateDonutChart('wedding-chart', 'wedding-chart-text', weddingPercent);
+                updateDonutChart('goals-chart', 'goals-chart-text', goalsPercent);
+            }
+        }
+        
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'short', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString(undefined, options);
+        }
+        
+        function showConfetti() {
+            const colors = ['#6c5ce7', '#fd79a8', '#00b894', '#fdcb6e', '#0984e3', '#e84393'];
+            
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.top = -10 + 'px';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                confetti.style.width = `${Math.random() * 10 + 5}px`;
+                confetti.style.height = `${Math.random() * 10 + 5}px`;
+                confetti.style.opacity = '1';
+                confetti.style.animation = `fall ${Math.random() * 2 + 1}s linear forwards`;
+                
+                document.body.appendChild(confetti);
+                
+                // Remove confetti after animation
+                setTimeout(() => {
+                    confetti.remove();
+                }, 3000);
+            }
+        }
+        
+        // Execute when DOM is loaded
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+
+
+</body></html>
